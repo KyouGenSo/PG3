@@ -20,7 +20,7 @@ int RecursivePay(int hours) {
 }
 
 int main() {
-	int hours = 8;
+	int hours = 1;
 	int regularPay = RegularPay(hours);
 	int recursivePay = RecursivePay(hours);
 
