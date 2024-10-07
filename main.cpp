@@ -6,6 +6,7 @@
 
 // 関数ポインターの型を定義
 typedef bool (*CheckFunc)(int);
+typedef void (*PFunc)(int*);
 
 // 結果をチェックするコールバック関数
 void checkResult(int diceNumber, CheckFunc checkFunc) {
@@ -14,6 +15,16 @@ void checkResult(int diceNumber, CheckFunc checkFunc) {
     } else {
         std::cout << "不正解。サイコロの数字は " << diceNumber << " でした。" << std::endl;
     }
+}
+
+void setTimeout(PFunc resultFunc, int seconds) {
+	std::this_thread::sleep_for(std::chrono::seconds(seconds));
+
+    resultFunc(&seconds);
+}
+
+void DisplayResult(int* seconds) {
+	std::cout << *seconds << "秒経過しました。"  << std::endl;
 }
 
 // 偶数チェック用の関数
@@ -38,8 +49,8 @@ int main() {
     int userInput;
     std::cin >> userInput;
 
-    // 3秒待つ
-    std::this_thread::sleep_for(std::chrono::seconds(3));
+	PFunc resultFunc = DisplayResult;
+	setTimeout(resultFunc, 3);
 
     // 関数ポインターを使って結果をチェック
     if (userInput == 0) {
