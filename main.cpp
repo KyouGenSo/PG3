@@ -1,38 +1,54 @@
-#include <stdio.h>
-#include <iostream>
+﻿#include <iostream>
+#include <cstdlib>
+#include <ctime>
+#include <thread>
+#include <chrono>
 
-// ��ʓI�Ȓ����̌n
-int RegularPay(int hours) {
-	return 1072 * hours;
+// 関数ポインターの型を定義
+typedef bool (*CheckFunc)(int);
+
+// 結果をチェックするコールバック関数
+void checkResult(int diceNumber, CheckFunc checkFunc) {
+    if (checkFunc(diceNumber)) {
+        std::cout << "正解！サイコロの数字は " << diceNumber << " でした。" << std::endl;
+    } else {
+        std::cout << "不正解。サイコロの数字は " << diceNumber << " でした。" << std::endl;
+    }
 }
 
-// �ċA�I�Ȓ����̌n
-int RecursivePay(int hours) {
-	if (hours == 0) {
-		return 0;
-	}
+// 偶数チェック用の関数
+bool isEven(int number) {
+    return number % 2 == 0;
+}
 
-	if (hours == 1) {
-		return 100;
-	} else {
-		return RecursivePay(hours - 1) * 2 - 50;
-	}
+// 奇数チェック用の関数
+bool isOdd(int number) {
+    return number % 2 != 0;
 }
 
 int main() {
-	int hours = 1;
-	int regularPay = RegularPay(hours);
-	int recursivePay = RecursivePay(hours);
+    // 乱数のシードを初期化
+    std::srand(static_cast<unsigned int>(std::time(nullptr)));
 
-	while (regularPay >= recursivePay) {
-		hours++;
-		regularPay = RegularPay(hours);
-		recursivePay = RecursivePay(hours);
-	}
+    // サイコロを振る
+    int diceNumber = std::rand() % 6 + 1;
 
-	printf("hours: %d\n", hours);
-	printf("regularPay: %d\n", regularPay);
-	printf("recursivePay: %d\n", recursivePay);
+    // ユーザーに奇数か偶数かを入力してもらう
+    std::cout << "サイコロの数字は奇数か偶数かを予想してください (0:偶数, 1:奇数): ";
+    int userInput;
+    std::cin >> userInput;
 
-	return 0;
+    // 3秒待つ
+    std::this_thread::sleep_for(std::chrono::seconds(3));
+
+    // 関数ポインターを使って結果をチェック
+    if (userInput == 0) {
+        checkResult(diceNumber, isEven);  // 偶数チェックのコールバック関数
+    } else if (userInput == 1) {
+        checkResult(diceNumber, isOdd);   // 奇数チェックのコールバック関数
+    } else {
+        std::cout << "無効な入力です。" << std::endl;
+    }
+
+    return 0;
 }
