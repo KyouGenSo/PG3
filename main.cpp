@@ -3,9 +3,10 @@
 #include <ctime>
 #include <thread>
 #include <chrono>
+#include <functional>
 
 // 関数ポインターの型を定義
-typedef bool (*CheckFunc)(int);
+typedef std::function<bool(int)> CheckFunc;
 typedef void (*PFunc)(int*);
 
 // 結果をチェックするコールバック関数
@@ -52,14 +53,14 @@ int main() {
 	PFunc resultFunc = DisplayResult;
 	setTimeout(resultFunc, 3);
 
-    // 関数ポインターを使って結果をチェック
-    if (userInput == 0) {
-        checkResult(diceNumber, isEven);  // 偶数チェックのコールバック関数
-    } else if (userInput == 1) {
-        checkResult(diceNumber, isOdd);   // 奇数チェックのコールバック関数
-    } else {
-        std::cout << "無効な入力です。" << std::endl;
-    }
+	// ラムダ式を使って結果を表示する
+	checkResult(diceNumber, [userInput](int number) -> bool {
+		if (userInput == 0) {
+			return isEven(number);
+		} else {
+			return isOdd(number);
+		}
+		});
 
     return 0;
 }
